@@ -106,10 +106,10 @@ decoder_5_32 u_dec3(.in(op_19_15 ), .co(op_19_15_d ));
 assign inst_add_w  = op_31_26_d[6'h00] & op_25_22_d[4'h0] & op_21_20_d[2'h1] & op_19_15_d[5'h00];
 assign inst_addi_w = op_31_26_d[6'h00] & op_25_22_d[4'ha];
 assign inst_ld_w   = op_31_26_d[6'h0a] & op_25_22_d[4'h2];
-assign inst_st_w   = ;//在这里实现inst_st_w指令的译码
+assign inst_st_w   = op_31_26_d[6'h0a] & op_25_22_d[4'h6];//在这里实现inst_st_w指令的译码
 assign inst_bne    = op_31_26_d[6'h17];
 
-assign src2_is_imm   = ;//在这里实现立即数选择信号
+assign src2_is_imm   = inst_addi_w | inst_ld_w | inst_st_w;//在这里实现立即数选择信号
 assign res_from_mem  = inst_ld_w;
 assign gr_we         = inst_add_w | inst_ld_w | inst_addi_w;
 assign mem_we        = inst_st_w;
@@ -119,24 +119,24 @@ assign rf_raddr1 = rj;
 assign rf_raddr2 = src_reg_is_rd ? rd :rk;
 regfile u_regfile(
     .clk    (clk      ),
-    .raddr1 (         ),
-    .rdata1 (rj_value),
-    .raddr2 (         ),
+    .raddr1 (rf_raddr1),
+    .rdata1 (rj_value ),
+    .raddr2 (rf_raddr2),
     .rdata2 (rkd_value),
     .we     (gr_we    ),
-    .waddr  (         ),
+    .waddr  (rd       ),
     .wdata  (rf_wdata )
     );//在空出的括号里完成引脚匹配
 
-assign br_offs   = ;//在这里完成br_offs信号的生成
+assign br_offs   = {{14{i16[4'hf]}},i16,2'h0};//在这里完成br_offs信号的生成
 assign br_target = pc + br_offs;
 assign rj_eq_rd  = (rj_value == rkd_value);
 assign br_taken  = valid && inst_bne  && !rj_eq_rd;
-assign nextpc    = ;//在这里实现nextpc信号的生成
+assign nextpc    = br_taken ? br_target : pc+4;//在这里实现nextpc信号的生成
 
 assign imm      = {{20{i12[11]}},i12[11:0]};
 assign alu_src1 = rj_value;
-assign alu_src2 = ;//在这里实现alu_src2信号
+assign alu_src2 = src2_is_imm ? imm : rkd_value;//在这里实现alu_src2信号
 
 assign alu_result = alu_src1+alu_src2;
 
@@ -144,7 +144,7 @@ assign data_sram_we    = mem_we;
 assign data_sram_addr  = alu_result;
 assign data_sram_wdata = rkd_value;
 
-assign rf_wdata = ;//在这里完成写回寄存器值的选择
+assign rf_wdata = res_from_mem ? data_sram_rdata : alu_result;//在这里完成写回寄存器值的选择
 
 endmodule
                          
