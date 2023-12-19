@@ -38,7 +38,6 @@ wire [31:0] inst;       // 当前指令
 reg  [31:0] pc;         // 当前指令地址
 
 wire [11:0] alu_op;         // ALU 操作码
-wire        load_op;        // 是否是 load 指令
 wire        src1_is_pc;     // src1 是否是 pc
 wire        src2_is_imm;    // src2 是否是立即数
 wire        res_from_mem;   // 结果是否来自内存
