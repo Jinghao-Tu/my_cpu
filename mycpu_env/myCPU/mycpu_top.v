@@ -29,7 +29,6 @@ module mycpu_top(
     wire        es2ms_valid;
     wire        ms2ws_valid;
 
-    wire [31:0] es_pc;
     wire [31:0] ms_pc;
 
     wire [38:0] es_rf_zip;
@@ -38,7 +37,8 @@ module mycpu_top(
 
     wire [32:0]     br_zip;
     wire [63:0]     fs2ds_bus;
-    wire [154:0]    ds2es_bus;
+    wire [162:0]    ds2es_bus;
+    wire [75:0]     es2ms_bus;
 
 
     IFreg my_ifReg(
@@ -66,9 +66,9 @@ module mycpu_top(
         .fs2ds_valid(fs2ds_valid),
         .fs2ds_bus(fs2ds_bus),
 
-        .es_allowin(es_allowin),
         .ds2es_valid(ds2es_valid),
         .ds2es_bus(ds2es_bus),
+        .es_allowin(es_allowin),
 
         .ws_rf_zip(ws_rf_zip),
         .ms_rf_zip(ms_rf_zip),
@@ -80,13 +80,13 @@ module mycpu_top(
         .resetn(resetn),
         
         .es_allowin(es_allowin),
+        .es_rf_zip(es_rf_zip),
         .ds2es_valid(ds2es_valid),
         .ds2es_bus(ds2es_bus),
 
-        .ms_allowin(ms_allowin),
-        .es_rf_zip(es_rf_zip),
         .es2ms_valid(es2ms_valid),
-        .es_pc(es_pc),
+        .es2ms_bus(es2ms_bus),
+        .ms_allowin(ms_allowin),
         
         .data_sram_en(data_sram_en),
         .data_sram_we(data_sram_we),
@@ -99,14 +99,13 @@ module mycpu_top(
         .resetn(resetn),
 
         .ms_allowin(ms_allowin),
-        .es_rf_zip(es_rf_zip),
         .es2ms_valid(es2ms_valid),
-        .es_pc(es_pc),
+        .es2ms_bus(es2ms_bus),
 
-        .ws_allowin(ws_allowin),
         .ms_rf_zip(ms_rf_zip),
         .ms2ws_valid(ms2ws_valid),
         .ms_pc(ms_pc),
+        .ws_allowin(ws_allowin),
 
         .data_sram_rdata(data_sram_rdata)
     ) ;
